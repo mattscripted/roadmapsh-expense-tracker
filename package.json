@@ -9,7 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "expense-tracker": "./expense-tracker.js"
+    "expense-tracker": "./index.js"
   },
   "dependencies": {
     "commander": "^13.0.0"
