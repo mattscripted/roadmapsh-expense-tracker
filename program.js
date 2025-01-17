@@ -1,5 +1,5 @@
 const { Command } = require('commander');
-const controller = require('./controller');
+const controller = require('./controllers/expense');
 
 const program = new Command();
 

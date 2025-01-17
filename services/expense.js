@@ -1,10 +1,4 @@
-const FileModel = require('./file-model');
-
-const Expense = new FileModel('Expense', {
-  date: new Intl.DateTimeFormat('en-CA').format(new Date()),
-  description: '',
-  amount: 0,
-});
+const Expense = require('../models/Expense');
 
 function createExpense(props) {
   return Expense.create(props);
