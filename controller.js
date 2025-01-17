@@ -1,33 +1,55 @@
-const service = require('./service');
+const service = require('./services/expense');
 
 function addExpense(options) {
-  const { description, amount } = options;
-  service.createExpense({ description, amount });
+  try {
+    const expense = service.createExpense(options);
+    console.log('Created expense', expense)
+  } catch (error) {
+    console.log(error.message);
+  }
 }
 
-function updateExpense(options) {
-  const { id, ...changes } = options;
-  service.updateExpense(id, changes);
+function getExpense({ id }) {
+  try {
+    const expense = service.getExpense(id);
+    console.log(`Get expense (id: ${id})`, expense);
+  } catch (error) {
+    console.log(error.message);
+  }
 }
 
-function deleteExpense(options) {
-  const { id } = options;
-  service.deleteExpense(id);
+function updateExpense({ id, ...changes }) {
+  try {
+    const expense = service.updateExpense(id, changes);
+    console.log(`Updated expense (id: ${id})`, expense);
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+function deleteExpense({ id }) {
+  try {
+    service.deleteExpense(id);
+    console.log(`Deleted expense (id: ${id})`);
+  } catch (error) {
+    console.log(error.message);
+  }
 }
 
 function listExpenses() {
-  console.log('listExpenses (controller)');
-  service.getExpenses();
+  const expenses = service.getExpenses();
+  console.log(expenses);
 }
 
-function summarizeExpenses(options) {
-  console.log('summarizeExpenses (controller)', options);
-  const { month } = options;
-  service.getExpenses({ month });
+function summarizeExpenses({ month }) {
+  const expenses = service.getExpenses({ month });
+  const totalAmount = expenses.reduce((sum, expense) => sum + expense.amount, 0)
+  console.log(`Total expenses: $${totalAmount}`);
 }
 
 module.exports = {
   addExpense,
+  getExpense,
   updateExpense,
   deleteExpense,
   listExpenses,

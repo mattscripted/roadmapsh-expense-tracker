@@ -11,14 +11,19 @@ program.command('add')
   .description('Add expense')
   .requiredOption('-d, --description <description>', 'description')
   // TODO: What if we pass an invalid amount?
-  .requiredOption('-a, --amount <amount>', 'amount')
+  .requiredOption('-a, --amount <amount>', 'amount', parseFloat)
   .action(controller.addExpense);
+
+program.command('get')
+  .description('Get expense')
+  .requiredOption('--id <id>', 'id')
+  .action(controller.getExpense);
 
 program.command('update')
   .description('Update expense')
   .requiredOption('--id <id>', 'id')
   .option('-d, --description <description>', 'description')
-  .option('-a, --amount <amount>', 'amount')
+  .option('-a, --amount <amount>', 'amount', parseFloat)
   .action(controller.updateExpense);
 
 program.command('delete')
