@@ -3,8 +3,18 @@ const controller = require('./controllers/expense');
 
 const program = new commander.Command();
 
-function parseDate(str) {
-  const date = new Date(str);
+function parseAmount(value) {
+  const amount = parseFloat(value);
+
+  if (isNaN(amount) || value <= 0) {
+    throw new commander.InvalidArgumentError('Amount must be positive.');
+  }
+
+  return amount;
+}
+
+function parseDate(value) {
+  const date = new Date(value);
 
   if (isNaN(date.valueOf())) {
     throw new commander.InvalidArgumentError('Not a valid date.');
@@ -20,7 +30,7 @@ program
 program.command('add')
   .description('Add expense')
   .requiredOption('-d, --description <description>', 'description')
-  .requiredOption('-a, --amount <amount>', 'amount', parseFloat)
+  .requiredOption('-a, --amount <amount>', 'amount', parseAmount)
   .option('--date <date>', 'date (yyyy-mm-dd)', parseDate)
   .action(controller.addExpense);
 
@@ -33,7 +43,7 @@ program.command('update')
   .description('Update expense')
   .requiredOption('--id <id>', 'id', parseInt)
   .option('-d, --description <description>', 'description')
-  .option('-a, --amount <amount>', 'amount', parseFloat)
+  .option('-a, --amount <amount>', 'amount', parseAmount)
   .option('--date <date>', 'date (yyyy-mm-dd)', parseDate)
   .action(controller.updateExpense);
 
