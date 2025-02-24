@@ -7,16 +7,16 @@ const FILE_ENCODING = 'utf8';
 class FileModel {
   // Meta
   #name;
-  #defaultDocument;
+  #schema;
   #filePath;
 
   // File content
   #nextId;
   #data;
 
-  constructor(name, defaultDocument = {}) {
+  constructor(name, schema = {}) {
     this.#name = name;
-    this.#defaultDocument  = defaultDocument;
+    this.#schema = schema;
     this.#filePath = path.join(global.ROOT_DIR, `${pluralize(this.#name.toLowerCase())}.json`);
 
     this.#readOrCreateJsonFile();
@@ -36,6 +36,16 @@ class FileModel {
     };
   }
 
+  get #defaultDocument() {
+    const document = {};
+
+    for (const [key, meta] of Object.entries(this.#schema)) {
+      document[key] = typeof meta.default === 'function' ? meta.default() : meta.default;
+    }
+    
+    return document;
+  }
+
   #writeJsonFile(fileContent = this.#fileContent) {
     fs.writeFileSync(this.#filePath, JSON.stringify(fileContent), FILE_ENCODING);
   }
@@ -50,7 +60,32 @@ class FileModel {
     const content = fs.readFileSync(this.#filePath, FILE_ENCODING);
     const { nextId, data } = JSON.parse(content);
     this.#nextId = nextId;
-    this.#data = data;
+    this.#data = data.map(this.#parseDocument.bind(this));
+  }
+
+  #parseDocument(unparsedDocument) {
+    const document = {
+      ...this.#defaultDocument,
+      ...unparsedDocument,
+    };
+
+    // Convert each value to its proper type
+    // E.g. date string converts back to Date object
+    for (const [key, meta] of Object.entries(this.#schema)) {
+      document[key] = meta.type(unparsedDocument[key]);
+    }
+    
+    return document;
+  }
+
+  #validate(document) {
+    // Validate each prop in the schema
+    for (const [key, meta] of Object.entries(this.#schema)) {
+      // Check prop against custom validator
+      if (meta.validate && !meta.validate.validator(document[key])) {
+        throw new Error(meta.validate.message(document))
+      }
+    }
   }
 
   create(props) {
@@ -60,6 +95,9 @@ class FileModel {
       ...props,
       id: this.#nextId,
     };
+    
+    // Validate
+    this.#validate(document);
 
     // Push document, auto-increment id, and save
     this.#data.push(document);
@@ -89,9 +127,12 @@ class FileModel {
     if (!document) {
       throw new Error(`${this.#name} document not found (id: ${id})`)
     }
-
-    // Apply changes
+    
+    // Apply changes and validate
     const updatedDocument = Object.assign(document, changes);
+    this.#validate(updatedDocument);
+
+    // Save to file
     this.#writeJsonFile();
 
     return updatedDocument;

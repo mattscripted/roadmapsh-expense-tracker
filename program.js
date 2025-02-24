@@ -21,7 +21,7 @@ program.command('get')
 
 program.command('update')
   .description('Update expense')
-  .requiredOption('--id <id>', 'id')
+  .requiredOption('--id <id>', 'id', parseInt)
   .option('-d, --description <description>', 'description')
   .option('-a, --amount <amount>', 'amount', parseFloat)
   .action(controller.updateExpense);
