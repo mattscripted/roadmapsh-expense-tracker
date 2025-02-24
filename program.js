@@ -1,7 +1,17 @@
-const { Command } = require('commander');
+const commander = require('commander');
 const controller = require('./controllers/expense');
 
-const program = new Command();
+const program = new commander.Command();
+
+function parseDate(str) {
+  const date = new Date(str);
+
+  if (isNaN(date.valueOf())) {
+    throw new commander.InvalidArgumentError('Not a valid date.');
+  }
+
+  return date;
+}
 
 program
   .name('expense-tracker')
@@ -10,8 +20,8 @@ program
 program.command('add')
   .description('Add expense')
   .requiredOption('-d, --description <description>', 'description')
-  // TODO: What if we pass an invalid amount?
   .requiredOption('-a, --amount <amount>', 'amount', parseFloat)
+  .option('--date <date>', 'date (yyyy-mm-dd)', parseDate)
   .action(controller.addExpense);
 
 program.command('get')
@@ -24,6 +34,7 @@ program.command('update')
   .requiredOption('--id <id>', 'id', parseInt)
   .option('-d, --description <description>', 'description')
   .option('-a, --amount <amount>', 'amount', parseFloat)
+  .option('--date <date>', 'date (yyyy-mm-dd)', parseDate)
   .action(controller.updateExpense);
 
 program.command('delete')
