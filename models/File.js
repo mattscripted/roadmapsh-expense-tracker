@@ -4,6 +4,20 @@ const pluralize = require('pluralize');
 
 const FILE_ENCODING = 'utf8';
 
+// Currently, we only support string, number, and date
+function isEmpty(value) {
+  const type = typeof value;
+
+  if (value === null || value === undefined) {
+    return true;
+  }
+  if (type === 'string') {
+    return value.trim().length === 0;
+  }
+  
+  return false;
+}
+
 class FileModel {
   // Meta
   #name;
@@ -81,9 +95,13 @@ class FileModel {
   #validate(document) {
     // Validate each prop in the schema
     for (const [key, meta] of Object.entries(this.#schema)) {
-      // Check prop against custom validator
+      // Check if required
+      if (meta.required && isEmpty(document[key])) {
+        throw new Error(`${key} is required`);
+      }
+      // Check against custom validator
       if (meta.validate && !meta.validate.validator(document[key])) {
-        throw new Error(meta.validate.message(document))
+        throw new Error(meta.validate.message(document));
       }
     }
   }
