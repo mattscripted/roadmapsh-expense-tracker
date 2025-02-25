@@ -1,27 +1,8 @@
-const commander = require('commander');
+const { Command }= require('commander');
 const controller = require('./controllers/expense');
+const { parseAmount, parseDate, parseMonth } = require('./utils/parse-args');
 
-const program = new commander.Command();
-
-function parseAmount(value) {
-  const amount = parseFloat(value);
-
-  if (isNaN(amount) || value <= 0) {
-    throw new commander.InvalidArgumentError('Amount must be positive.');
-  }
-
-  return amount;
-}
-
-function parseDate(value) {
-  const date = new Date(value);
-
-  if (isNaN(date.valueOf())) {
-    throw new commander.InvalidArgumentError('Not a valid date.');
-  }
-
-  return date;
-}
+const program = new Command();
 
 program
   .name('expense-tracker')
@@ -58,8 +39,7 @@ program.command('list')
 
 program.command('summary')
   .description('Get total sum of expenses')
-  // TODO: What if we don't pass a valid number?
-  .option('-m, --month <month>', 'month (1 - 12) of current year')
+  .option('-m, --month <month>', 'month (1 - 12) of current year', parseMonth)
   .action(controller.summarizeExpenses);
 
 module.exports = program;

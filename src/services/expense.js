@@ -18,7 +18,19 @@ function deleteExpense(id) {
 
 // TODO: Support filtering by month
 function getExpenses(filter) {
-  return Expense.find();
+  const expenses = Expense.find();
+
+  if (filter) {
+    // Currently, we only support filtering by month
+    // getMonth() is 0 - 11, but filter.month is 1 - 12
+    // TODO: getMonth isn't working?
+    return expenses.filter(expense => {
+      console.log('getExpenses', expense, expense.date, typeof expense.date)
+      return expense.date.getMonth() === filter.month - 1
+    });
+  }
+
+  return expenses;
 }
 
 module.exports = { createExpense, getExpense, updateExpense, deleteExpense, getExpenses };
