@@ -16,21 +16,27 @@ function deleteExpense(id) {
   return Expense.deleteById(id);
 }
 
-// TODO: Support filtering by month
-function getExpenses(filter) {
+function getExpenses({ month } = {}) {
   const expenses = Expense.find();
 
-  if (filter) {
-    // Currently, we only support filtering by month
-    // getMonth() is 0 - 11, but filter.month is 1 - 12
-    // TODO: getMonth isn't working?
-    return expenses.filter(expense => {
-      console.log('getExpenses', expense, expense.date, typeof expense.date)
-      return expense.date.getMonth() === filter.month - 1
-    });
+  if (month) {
+    // Date.getMonth() is 0 - 11, but we use 1 - 12
+    return expenses.filter(expense => expense.date.getUTCMonth() === month - 1);
   }
 
   return expenses;
 }
 
-module.exports = { createExpense, getExpense, updateExpense, deleteExpense, getExpenses };
+function getTotalExpenses({ month } = {}) {
+  const expenses = getExpenses({ month });
+  return expenses.reduce((sum, expense) => sum + expense.amount, 0);
+}
+
+module.exports = {
+  createExpense,
+  getExpense,
+  updateExpense,
+  deleteExpense,
+  getExpenses,
+  getTotalExpenses
+};

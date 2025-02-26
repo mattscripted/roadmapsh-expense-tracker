@@ -42,9 +42,8 @@ function listExpenses() {
 }
 
 function summarizeExpenses({ month }) {
-  const expenses = expenseService.getExpenses({ month });
-  const totalAmount = expenses.reduce((sum, expense) => sum + expense.amount, 0)
-  console.log(`Total expenses: $${totalAmount}`);
+  const totalExpenses = expenseService.getTotalExpenses({ month });
+  console.log(`Total expenses: $${totalExpenses}`);
 }
 
 module.exports = {

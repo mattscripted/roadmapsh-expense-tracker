@@ -1,4 +1,4 @@
-const FileModel = require('./File');
+const FileModel = require('../utils/FileModel');
 
 const Expense = new FileModel('Expense', {
   date: {
