@@ -11,7 +11,7 @@ To use `expense-tracker`:
 ## Commands
 ```sh
 # Create an expense (returns an id)
-expense-tracker add --decription Dinner --amount 25
+expense-tracker add --description Dinner --amount 25
 
 # Get an expense by id
 expense-tracker get --id 1
