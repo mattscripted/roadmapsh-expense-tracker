@@ -42,7 +42,7 @@ function deleteExpense({ id }) {
 
 function listExpenses() {
   const expenses = expenseService.getExpenses();
-  console.log(expenses);
+  console.table(expenses);
 }
 
 function summarizeExpenses({ month }) {
