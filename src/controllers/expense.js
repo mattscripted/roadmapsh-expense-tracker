@@ -12,15 +12,19 @@ function addExpense(options) {
 function getExpense({ id }) {
   try {
     const expense = expenseService.getExpense(id);
+
+    if (!expense) {
+      throw new Error(`Expense not found (id: ${id})`);
+    }
     console.log(`Get expense (id: ${id})`, expense);
   } catch (error) {
     console.log(error.message);
   }
 }
 
-function updateExpense({ id, ...changes }) {
+function updateExpense({ id, ...updates }) {
   try {
-    const expense = expenseService.updateExpense(id, changes);
+    const expense = expenseService.updateExpense(id, updates);
     console.log(`Updated expense (id: ${id})`, expense);
   } catch (error) {
     console.log(error.message);

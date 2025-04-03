@@ -1,4 +1,4 @@
-const FileModel = require('../utils/FileModel');
+const FileModel = require('../lib/FileModel');
 
 const Expense = new FileModel('Expense', {
   date: {
@@ -8,16 +8,14 @@ const Expense = new FileModel('Expense', {
   },
   description: {
     type: String,
-    default: '',
     required: true,
   },
   amount: {
     type: Number,
-    default: 0,
     required: true,
     validate: {
       validator: value => value > 0,
-      message: document => `${document.amount} must be a positive number`
+      message: 'must be a positive number',
     },
   },
 });
