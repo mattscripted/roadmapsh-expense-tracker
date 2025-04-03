@@ -6,10 +6,12 @@ const FILE_ENCODING = 'utf8';
 
 class FileStorage {
   #name;
+  #schema;
   #filePath;
 
-  constructor(name) {
+  constructor(name, schema) {
     this.#name = name;
+    this.#schema = schema;
     const pluralName = pluralize(name.toLowerCase());
 
     this.#filePath = path.resolve(__dirname, `../../data/${pluralName}.json`);
@@ -31,7 +33,20 @@ class FileStorage {
 
   #read() {
     const data = fs.readFileSync(this.#filePath, FILE_ENCODING);
-    return JSON.parse(data);
+
+    // Parse, and return data back to its original schema
+    const schema = this.#schema;
+    return JSON.parse(data, (key, value) => {
+      if (key in schema) {
+        const { type } = schema[key];
+
+        if (type === Date) {
+          return new Date(value);
+        }
+      }
+
+      return value;
+    });
   }
 
   #write(fileData) {
@@ -53,9 +68,6 @@ class FileStorage {
     return record;
   }
 
-  // TODO: There may be an inconsistency in what we return, since this data is from the file
-  // but createRecord is the record date. Where should decoding happen?
-  // Or, should I convert createRecord() to JSON?
   getAllRecords() {
     const fileData = this.#read();
     return fileData.records;
@@ -65,8 +77,6 @@ class FileStorage {
     return this.getAllRecords().find(record => record.id === id);
   }
 
-  // TODO: Update record returns the non-decoded data, while create returns decoded data
-  // since it was already decoded going in!
   updateRecordById(id, updatedRecordData) {
     const fileData = this.#read();
 

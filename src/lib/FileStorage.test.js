@@ -12,12 +12,27 @@ function encodeFileData(fileData) {
 
 describe('FileStorage', () => {
   const mockName = 'test';
+  const mockSchema = {
+    description: {
+      type: String,
+    },
+    amount: {
+      type: Number,
+    },
+    date: {
+      type: Date,
+    },
+  };
   const mockFilePath = path.resolve(__dirname, `../../data/tests.json`);
   const mockRecordData1 = {
-    name: 'record1',
+    description: 'Lunch',
+    amount: 15,
+    date: new Date('2025-04-03T00:00:00.000Z')
   };
   const mockRecordData2 = {
-    name: 'record2',
+    description: 'Dinner',
+    amount: 30,
+    date: new Date('2025-04-04T00:00:00.000Z')
   };
   const mockRecord1 = { ...mockRecordData1, id: 1 };
   const mockRecord2 = { ...mockRecordData2, id: 2 };
@@ -34,7 +49,7 @@ describe('FileStorage', () => {
         records: [],
       };
 
-      new FileStorage(mockName);
+      new FileStorage(mockName, mockSchema);
 
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         mockFilePath,
@@ -46,7 +61,7 @@ describe('FileStorage', () => {
     it('does not create the file if it exists', () => {
       fs.existsSync.mockReturnValue(true);
 
-      new FileStorage(mockName);
+      new FileStorage(mockName, mockSchema);
 
       expect(fs.writeFileSync).not.toHaveBeenCalled();
     });
@@ -61,7 +76,7 @@ describe('FileStorage', () => {
         })
       );
 
-      const storage = new FileStorage(mockName);
+      const storage = new FileStorage(mockName, mockSchema);
       const record = storage.createRecord(mockRecordData1);
 
       const expectedFileData = {
@@ -85,7 +100,7 @@ describe('FileStorage', () => {
         })
       );
 
-      const storage = new FileStorage(mockName);
+      const storage = new FileStorage(mockName, mockSchema);
       const record = storage.createRecord(mockRecordData2);
 
       const expextedFileData = {
@@ -111,7 +126,7 @@ describe('FileStorage', () => {
         })
       );
   
-      const storage = new FileStorage(mockName);
+      const storage = new FileStorage(mockName, mockSchema);
   
       expect(storage.getAllRecords()).toEqual([mockRecord1, mockRecord2]);
     });
@@ -126,7 +141,7 @@ describe('FileStorage', () => {
         })
       );
 
-      const storage = new FileStorage(mockName);
+      const storage = new FileStorage(mockName, mockSchema);
 
       expect(storage.getRecordById(3)).toEqual(undefined);
     });
@@ -139,7 +154,7 @@ describe('FileStorage', () => {
         })
       );
 
-      const storage = new FileStorage(mockName);
+      const storage = new FileStorage(mockName, mockSchema);
 
       expect(storage.getRecordById(1)).toEqual(mockRecord1);
     });
@@ -171,7 +186,7 @@ describe('FileStorage', () => {
         name: 'changed-record1',
       };
 
-      const storage = new FileStorage(mockName);
+      const storage = new FileStorage(mockName, mockSchema);
       const updatedRecord1 = storage.updateRecordById(1, updates);
 
       const expectedFileData = {
@@ -200,7 +215,7 @@ describe('FileStorage', () => {
         })
       );
 
-      const storage = new FileStorage(mockName);
+      const storage = new FileStorage(mockName, mockSchema);
 
       expect(() => storage.deleteRecordById(3)).toThrow();
     });
@@ -213,7 +228,7 @@ describe('FileStorage', () => {
         })
       );
 
-      const storage = new FileStorage(mockName);
+      const storage = new FileStorage(mockName, mockSchema);
       const deletedRecord = storage.deleteRecordById(1);
 
       const expectedFileData = {

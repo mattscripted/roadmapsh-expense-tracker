@@ -21,8 +21,7 @@ function getExpenses({ month } = {}) {
 
   if (month) {
     // Date.getMonth() is 0 - 11, but we use 1 - 12
-    // TODO: Let FileModel convert date string to Date
-    return expenses.filter(expense => new Date(expense.date).getUTCMonth() === month - 1);
+    return expenses.filter(expense => expense.date.getUTCMonth() === month - 1);
   }
 
   return expenses;

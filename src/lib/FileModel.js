@@ -14,7 +14,7 @@ class FileModel {
 
   constructor(name, schema) {
     this.#schema = schema;
-    this.#storage = new FileStorage(name);
+    this.#storage = new FileStorage(name, schema);
     this.#validator = new SchemaValidator(schema);
   }
 

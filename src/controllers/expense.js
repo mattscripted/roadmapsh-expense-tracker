@@ -17,7 +17,7 @@ function getExpense({ id }) {
     const expense = expenseService.getExpense(id);
 
     if (!expense) {
-      throw new Error(`Expense not found (id: ${id})`);
+      throw new Error(`Unable to retrieve Expense record with id = ${id}, because it could not be found.`);
     }
 
     console.table([expense], EXPENSE_TABLE_COLUMNS);
